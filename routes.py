@@ -28,7 +28,8 @@ async def list_todos(request: Request):
 #GET BY ID: OBTENER TODO POR ID
 @router.get("/{id}", response_description="Get a single todo by id", response_model=Todo)
 async def find_todo(id: str, request: Request):
-    if (todo := request.app.database["todo"].find_one({"_id": id})) is not None:
+    todo = request.app.database["todo"].find_one({"_id": id})
+    if todo is not None:
         return todo
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Todo with ID {id} not found")
 
@@ -45,9 +46,8 @@ async def update_todo(id: str, request: Request, todo: TodoUpdate = Body(...)):
         if update_result.modified_count == 0:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Todo with ID {id} not found")
 
-    if (
-        existing_todo := request.app.database["todo"].find_one({"_id": id})
-    ) is not None:
+    existing_todo = request.app.database["todo"].find_one({"_id": id})
+    if existing_todo is not None:
         return existing_todo
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Todo with ID {id} not found")
